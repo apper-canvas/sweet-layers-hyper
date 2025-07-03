@@ -77,10 +77,9 @@ const ProductCard = ({ cake }) => {
               <ApperIcon name="Clock" size={16} className="text-gray-400" />
               <span className="text-sm text-gray-600">2-3 days</span>
             </div>
-          </div>
+</div>
           
           <div className="flex items-center gap-2">
-<div className="flex items-center gap-2">
             <Button
               variant="primary"
               size="sm"
