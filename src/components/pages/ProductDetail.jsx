@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { useCart } from "@/hooks/useCart";
@@ -16,6 +16,7 @@ import { getCakeById } from "@/services/api/cakeService";
 
 const ProductDetail = () => {
   const { cakeId } = useParams()
+  const navigate = useNavigate()
   const { addToCart } = useCart()
   const [cake, setCake] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -77,7 +78,7 @@ const ProductDetail = () => {
     }
   }
   
-  const handleAddToCart = () => {
+const handleAddToCart = () => {
     if (!customization.size || !customization.flavor) {
       toast.error('Please select size and flavor')
       return
@@ -95,6 +96,31 @@ const ProductDetail = () => {
     
     addToCart(cartItem)
     toast.success(`${cake.name} added to cart!`)
+  }
+  
+  const handleOrderNow = () => {
+    if (!customization.size || !customization.flavor) {
+      toast.error('Please select size and flavor')
+      return
+    }
+    
+    const cartItem = {
+      cakeId: cake.Id,
+      quantity: customization.quantity,
+      size: customization.size,
+      flavor: customization.flavor,
+      message: customization.message,
+      deliveryDate: customization.deliveryDate,
+      price: selectedPrice
+    }
+    
+    addToCart(cartItem)
+    toast.success(`${cake.name} added to cart! Proceeding to checkout...`)
+    
+    // Navigate to checkout page
+    setTimeout(() => {
+      navigate('/checkout')
+    }, 1000)
   }
   
   useEffect(() => {
@@ -314,7 +340,7 @@ const ProductDetailImage = ({ src, alt, className }) => {
   const maxRetries = 2
   const fallbackImage = `https://via.placeholder.com/600x400/D4667A/FFFFFF?text=${encodeURIComponent(alt)}`
   
-  // Validate image URL
+// Validate image URL
   const isValidImageUrl = (url) => {
     if (!url || typeof url !== 'string') return false
     
@@ -418,6 +444,34 @@ const ProductDetailImage = ({ src, alt, className }) => {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+{/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={handleAddToCart}
+                className="flex-1"
+              >
+                <ApperIcon name="ShoppingCart" size={20} />
+                Add to Cart - ${totalPrice.toFixed(2)}
+              </Button>
+              
+              <Button
+                variant="accent"
+                size="lg"
+                onClick={handleOrderNow}
+                className="flex-1"
+              >
+                <ApperIcon name="ShoppingBag" size={20} />
+                Order Now - ${totalPrice.toFixed(2)}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
