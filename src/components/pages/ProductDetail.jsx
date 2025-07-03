@@ -98,26 +98,15 @@ const handleAddToCart = () => {
     toast.success(`${cake.name} added to cart!`)
   }
   
-  const handleOrderNow = () => {
+const handleOrderNow = () => {
     if (!customization.size || !customization.flavor) {
       toast.error('Please select size and flavor')
       return
     }
     
-    const cartItem = {
-      cakeId: cake.Id,
-      quantity: customization.quantity,
-      size: customization.size,
-      flavor: customization.flavor,
-      message: customization.message,
-      deliveryDate: customization.deliveryDate,
-      price: selectedPrice
-    }
+    toast.success(`Proceeding to checkout with ${cake.name}...`)
     
-    addToCart(cartItem)
-    toast.success(`${cake.name} added to cart! Proceeding to checkout...`)
-    
-    // Navigate to checkout page
+    // Navigate directly to checkout page
     setTimeout(() => {
       navigate('/checkout')
     }, 1000)
