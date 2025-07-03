@@ -15,8 +15,9 @@ const Header = () => {
   const navigationItems = [
     { name: 'Home', path: '/' },
     { name: 'Birthday Cakes', path: '/category/birthday' },
-    { name: 'Wedding Cakes', path: '/category/wedding' },
+{ name: 'Wedding Cakes', path: '/category/wedding' },
     { name: 'Specialty', path: '/category/specialty' },
+    { name: 'Orders', path: '/orders' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' }
   ]

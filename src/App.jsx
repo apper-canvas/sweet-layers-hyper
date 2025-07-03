@@ -6,6 +6,7 @@ import Category from '@/components/pages/Category'
 import ProductDetail from '@/components/pages/ProductDetail'
 import Cart from '@/components/pages/Cart'
 import Checkout from '@/components/pages/Checkout'
+import Orders from '@/components/pages/Orders'
 import About from '@/components/pages/About'
 import Contact from '@/components/pages/Contact'
 import { CartProvider } from '@/hooks/useCart'
@@ -20,7 +21,8 @@ function App() {
             <Route path="/category/:categoryName" element={<Category />} />
             <Route path="/cake/:cakeId" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
+<Route path="/checkout" element={<Checkout />} />
+            <Route path="/orders" element={<Orders />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>
