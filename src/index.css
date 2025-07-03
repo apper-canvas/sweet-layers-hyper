@@ -105,14 +105,28 @@ box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.
   
 .image-loading-state {
     @apply bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .image-loading-state::before {
+    content: '';
+    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/60 to-transparent;
+    animation: shimmer 1.5s infinite;
   }
   
   .image-error-container {
-    @apply bg-white/90 backdrop-blur-sm rounded-lg p-3 border border-gray-200 shadow-sm;
+    @apply bg-white/95 backdrop-blur-sm rounded-lg p-3 border border-gray-200 shadow-sm;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .image-error-container:hover {
+    @apply shadow-md border-gray-300;
   }
   
   .image-retry-btn {
-    @apply bg-primary text-white hover:bg-primary/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-primary text-white hover:bg-primary/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-md px-3 py-1.5 text-sm font-medium;
+    min-width: 60px;
   }
   
   .image-retry-btn:hover:not(:disabled) {
@@ -124,7 +138,7 @@ box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.
   }
   
   .image-fallback {
-    @apply bg-gradient-to-br from-surface to-background border-2 border-dashed border-gray-300 rounded-lg;
+    @apply bg-gradient-to-br from-surface to-background border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center;
   }
   
   .image-loading-shimmer {
@@ -144,9 +158,24 @@ box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.
   
   .image-error-overlay {
     @apply absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center;
+    transition: opacity 0.2s ease-in-out;
   }
   
   .image-error-content {
-    @apply text-white text-center p-4 rounded-lg bg-black/20;
+    @apply text-white text-center p-4 rounded-lg bg-black/20 backdrop-blur-sm;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .image-timeout-indicator {
+    @apply absolute top-2 right-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full;
+    animation: pulse 2s infinite;
+  }
+  
+  .image-retry-count {
+    @apply text-xs text-gray-400 mt-1 font-mono;
+  }
+  
+  .image-error-details {
+    @apply mt-2 text-xs text-gray-500 max-w-xs truncate;
   }
 }

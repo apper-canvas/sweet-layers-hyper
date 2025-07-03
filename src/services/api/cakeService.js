@@ -7,11 +7,83 @@ const FALLBACK_IMAGES = [
   'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDgwMCA2MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0zNTAgMjUwSDE1MFYzNTBIMzUwVjI1MFoiIGZpbGw9IiNEMUQ1REIiLz4KPHBhdGggZD0iTTMwMCAzMDBIMjAwVjMwMFoiIGZpbGw9IiNEMUQ1REIiLz4KPHRleHQgeD0iNDAwIiB5PSIzMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzlDQTNBRiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q2FrZSBJbWFnZTwvdGV4dD4KPC9zdmc+',
   'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDgwMCA2MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjRkVGQUY3Ii8+CjxjaXJjbGUgY3g9IjQwMCIgY3k9IjMwMCIgcj0iMTAwIiBmaWxsPSIjRDQ2NjdBIiBvcGFjaXR5PSIwLjIiLz4KPHRleHQgeD0iNDAwIiB5PSIzMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzZCNEM1QSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U3dlZXQgTGF5ZXJzPC90ZXh0Pgo8L3N2Zz4='
 ]
-
 // Get a fallback image based on cake ID for consistency
-const getFallbackImage = (cakeId) => {
+const getFallbackImage = (cakeId, alt = 'Cake') => {
   const index = cakeId ? Math.abs(cakeId.toString().charCodeAt(0)) % FALLBACK_IMAGES.length : 0
-  return FALLBACK_IMAGES[index]
+  return FALLBACK_IMAGES[index] || `https://via.placeholder.com/400x300/D4667A/FFFFFF?text=${encodeURIComponent(alt)}`
+}
+
+// Validate image URL
+export const validateImageUrl = (url) => {
+  if (!url || typeof url !== 'string') return false
+  
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?.*)?$/i.test(url)
+  }
+}
+
+// Load image with proper error handling
+export const loadImageWithState = (src, alt = 'Image') => {
+  return new Promise((resolve, reject) => {
+    if (!validateImageUrl(src)) {
+      reject(new Error(`Invalid image URL: ${src}`))
+      return
+    }
+    
+    const img = new Image()
+    const timeoutId = setTimeout(() => {
+      reject(new Error(`Image load timeout: ${src}`))
+    }, 10000) // 10 second timeout
+    
+    img.onload = () => {
+      clearTimeout(timeoutId)
+      resolve(src)
+    }
+    
+    img.onerror = () => {
+      clearTimeout(timeoutId)
+      reject(new Error(`Failed to load image: ${src}`))
+    }
+    
+    img.src = src
+  })
+}
+
+// Preload image with fallback
+export const preloadImage = async (src, cakeId = null, alt = 'Cake') => {
+  try {
+    await loadImageWithState(src, alt)
+    return src
+  } catch (error) {
+    console.warn('Image preload failed, using fallback:', error.message)
+    return getFallbackImage(cakeId, alt)
+  }
+}
+
+// Validate cake images and provide fallbacks
+export const validateCakeImages = (cake) => {
+  if (!cake || !cake.images || !Array.isArray(cake.images)) {
+    return {
+      ...cake,
+      images: [getFallbackImage(cake?.Id, cake?.name)]
+    }
+  }
+  
+  // Validate each image and provide fallbacks for invalid ones
+  const validatedImages = cake.images.map((image, index) => {
+    if (validateImageUrl(image)) {
+      return image
+    }
+    return getFallbackImage(cake.Id, `${cake.name} ${index + 1}`)
+  })
+  
+  return {
+    ...cake,
+    images: validatedImages
+  }
 }
 
 export const getCakes = async () => {

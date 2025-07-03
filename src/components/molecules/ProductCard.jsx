@@ -108,7 +108,7 @@ const ProductImage = ({ src, alt, className }) => {
   const [imageError, setImageError] = useState(false)
   const [imageLoading, setImageLoading] = useState(true)
   const [retryCount, setRetryCount] = useState(0)
-  const [isRetrying, setIsRetrying] = useState(false)
+  const [currentSrc, setCurrentSrc] = useState(src)
   
   const maxRetries = 2
   const fallbackImage = `https://via.placeholder.com/400x300/D4667A/FFFFFF?text=${encodeURIComponent(alt)}`
@@ -117,62 +117,43 @@ const ProductImage = ({ src, alt, className }) => {
   const isValidImageUrl = (url) => {
     if (!url || typeof url !== 'string') return false
     
-    // Check for common image extensions
-    const imageExtensions = /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?.*)?$/i
-    
-    // Check for valid URL format
     try {
       new URL(url)
       return true
     } catch {
-      // If not a valid URL, check if it's a relative path with image extension
-      return imageExtensions.test(url)
+      // Check if it's a relative path with image extension
+      return /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?.*)?$/i.test(url)
     }
   }
   
-  // Preload image to check if it's loadable
-  const preloadImage = (url) => {
-    return new Promise((resolve, reject) => {
-      const img = new Image()
-      img.onload = () => resolve(url)
-      img.onerror = () => reject(new Error(`Failed to load image: ${url}`))
-      img.src = url
-    })
-  }
+  // Reset state when src changes
+  React.useEffect(() => {
+    if (src !== currentSrc) {
+      setCurrentSrc(src)
+      setImageError(false)
+      setImageLoading(true)
+      setRetryCount(0)
+    }
+  }, [src, currentSrc])
   
-  const handleImageError = async () => {
-    console.warn(`Image load failed for: ${src}`, {
+  const handleImageError = () => {
+    console.warn(`Image load failed for: ${currentSrc}`, {
       alt,
       retryCount,
-      isValidUrl: isValidImageUrl(src)
+      isValidUrl: isValidImageUrl(currentSrc)
     })
     
-    if (retryCount < maxRetries && isValidImageUrl(src)) {
-      setIsRetrying(true)
+    if (retryCount < maxRetries && isValidImageUrl(currentSrc)) {
       setRetryCount(prev => prev + 1)
+      
+      // Add timestamp to bypass cache
+      const retryUrl = currentSrc + (currentSrc.includes('?') ? '&' : '?') + `retry=${retryCount + 1}&t=${Date.now()}`
       
       // Exponential backoff: wait 1s, then 2s, then 4s
       const delay = Math.pow(2, retryCount) * 1000
       
-      setTimeout(async () => {
-        try {
-          await preloadImage(src)
-          // If preload succeeds, force re-render by updating the src
-          setImageError(false)
-          setIsRetrying(false)
-          // Trigger re-render by changing src slightly
-          const img = document.querySelector(`img[alt="${alt}"]`)
-          if (img) {
-            img.src = src + (src.includes('?') ? '&' : '?') + `retry=${retryCount}`
-          }
-        } catch (error) {
-          console.error(`Retry ${retryCount} failed for image:`, error)
-          setIsRetrying(false)
-          if (retryCount >= maxRetries) {
-            setImageError(true)
-            setImageLoading(false)
-          }
-        }
+      setTimeout(() => {
+        setCurrentSrc(retryUrl)
       }, delay)
     } else {
       setImageError(true)
@@ -183,7 +164,6 @@ const ProductImage = ({ src, alt, className }) => {
   const handleImageLoad = () => {
     setImageLoading(false)
     setImageError(false)
-    setIsRetrying(false)
   }
   
   const handleRetryClick = () => {
@@ -191,26 +171,23 @@ const ProductImage = ({ src, alt, className }) => {
       setRetryCount(0)
       setImageError(false)
       setImageLoading(true)
-      setIsRetrying(false)
       
-      // Force reload the image
-      const img = document.querySelector(`img[alt="${alt}"]`)
-      if (img) {
-        img.src = src + (src.includes('?') ? '&' : '?') + `t=${Date.now()}`
-      }
+      // Force reload with timestamp
+      const retryUrl = src + (src.includes('?') ? '&' : '?') + `manual_retry=${Date.now()}`
+      setCurrentSrc(retryUrl)
     }
   }
   
   // Use fallback immediately if URL is invalid
-  const finalSrc = imageError || !isValidImageUrl(src) ? fallbackImage : src
+  const finalSrc = imageError || !isValidImageUrl(currentSrc) ? fallbackImage : currentSrc
   
   return (
     <div className="relative">
-      {imageLoading && (
+      {imageLoading && !imageError && (
         <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center image-loading-state">
           <div className="flex flex-col items-center gap-2">
             <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-            {isRetrying && (
+            {retryCount > 0 && (
               <span className="text-xs text-gray-600">Retrying... ({retryCount}/{maxRetries})</span>
             )}
           </div>
@@ -234,9 +211,8 @@ const ProductImage = ({ src, alt, className }) => {
               <button
                 onClick={handleRetryClick}
                 className="image-retry-btn text-xs px-3 py-1 rounded"
-                disabled={isRetrying}
               >
-                {isRetrying ? 'Retrying...' : 'Retry'}
+                Retry
               </button>
             )}
             <div className="text-xs text-gray-400 mt-1">

@@ -41,16 +41,22 @@ const Error = ({
     }
   }
   
-  const getErrorMessage = () => {
+const getErrorMessage = () => {
     if (type === 'image') {
-      return message || "We're having trouble loading some images. This might be due to a slow connection or server issues."
+      return message || "We're having trouble loading some images. This might be due to a slow connection, server issues, or the image may no longer be available."
+    }
+    if (type === 'network') {
+      return message || "Unable to connect to the server. Please check your internet connection and try again."
     }
     return message
   }
   
   const getErrorTitle = () => {
     if (type === 'image') {
-      return title || "Image Loading Issue"
+      return title || "Image Loading Failed"
+    }
+    if (type === 'network') {
+      return title || "Connection Problem"
     }
     return title
   }

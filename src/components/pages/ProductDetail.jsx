@@ -308,35 +308,114 @@ className="aspect-square overflow-hidden rounded-2xl shadow-lg"
 const ProductDetailImage = ({ src, alt, className }) => {
   const [imageError, setImageError] = useState(false)
   const [imageLoading, setImageLoading] = useState(true)
+  const [retryCount, setRetryCount] = useState(0)
+  const [currentSrc, setCurrentSrc] = useState(src)
   
+  const maxRetries = 2
   const fallbackImage = `https://via.placeholder.com/600x400/D4667A/FFFFFF?text=${encodeURIComponent(alt)}`
   
+  // Validate image URL
+  const isValidImageUrl = (url) => {
+    if (!url || typeof url !== 'string') return false
+    
+    try {
+      new URL(url)
+      return true
+    } catch {
+      return /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?.*)?$/i.test(url)
+    }
+  }
+  
+  // Reset state when src changes
+  React.useEffect(() => {
+    if (src !== currentSrc) {
+      setCurrentSrc(src)
+      setImageError(false)
+      setImageLoading(true)
+      setRetryCount(0)
+    }
+  }, [src, currentSrc])
+  
   const handleImageError = () => {
-    setImageError(true)
-    setImageLoading(false)
+    console.warn(`Product detail image load failed for: ${currentSrc}`, {
+      alt,
+      retryCount,
+      isValidUrl: isValidImageUrl(currentSrc)
+    })
+    
+    if (retryCount < maxRetries && isValidImageUrl(currentSrc)) {
+      setRetryCount(prev => prev + 1)
+      
+      // Add timestamp to bypass cache
+      const retryUrl = currentSrc + (currentSrc.includes('?') ? '&' : '?') + `retry=${retryCount + 1}&t=${Date.now()}`
+      
+      // Exponential backoff
+      const delay = Math.pow(2, retryCount) * 1000
+      
+      setTimeout(() => {
+        setCurrentSrc(retryUrl)
+      }, delay)
+    } else {
+      setImageError(true)
+      setImageLoading(false)
+    }
   }
   
   const handleImageLoad = () => {
     setImageLoading(false)
+    setImageError(false)
   }
+  
+  const handleRetryClick = () => {
+    if (retryCount < maxRetries) {
+      setRetryCount(0)
+      setImageError(false)
+      setImageLoading(true)
+      
+      const retryUrl = src + (src.includes('?') ? '&' : '?') + `manual_retry=${Date.now()}`
+      setCurrentSrc(retryUrl)
+    }
+  }
+  
+  // Use fallback immediately if URL is invalid
+  const finalSrc = imageError || !isValidImageUrl(currentSrc) ? fallbackImage : currentSrc
   
   return (
     <div className="relative w-full h-full">
-      {imageLoading && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      {imageLoading && !imageError && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center image-loading-state">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            {retryCount > 0 && (
+              <span className="text-xs text-gray-600">Retrying... ({retryCount}/{maxRetries})</span>
+            )}
+          </div>
         </div>
       )}
       <img
-        src={imageError || !src ? fallbackImage : src}
+        src={finalSrc}
         alt={alt}
         className={className}
         onError={handleImageError}
         onLoad={handleImageLoad}
       />
       {imageError && (
-        <div className="absolute bottom-4 right-4 bg-red-500 text-white text-sm px-3 py-2 rounded-lg">
-          Image unavailable
+        <div className="absolute inset-0 bg-gray-100 flex flex-col items-center justify-center p-4">
+          <div className="image-error-container text-center">
+            <ApperIcon name="ImageOff" size={32} className="text-gray-400 mb-2 mx-auto" />
+            <p className="text-sm text-gray-600 mb-2">Image unavailable</p>
+            {retryCount < maxRetries && (
+              <button
+                onClick={handleRetryClick}
+                className="image-retry-btn text-xs px-3 py-1 rounded"
+              >
+                Retry
+              </button>
+            )}
+            <div className="text-xs text-gray-400 mt-1">
+              Attempts: {retryCount}/{maxRetries}
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -347,32 +426,77 @@ const ProductDetailImage = ({ src, alt, className }) => {
 const ProductThumbnail = ({ src, alt, className }) => {
   const [imageError, setImageError] = useState(false)
   const [imageLoading, setImageLoading] = useState(true)
+  const [retryCount, setRetryCount] = useState(0)
+  const [currentSrc, setCurrentSrc] = useState(src)
   
+  const maxRetries = 1 // Fewer retries for thumbnails
   const fallbackImage = `https://via.placeholder.com/100x100/D4667A/FFFFFF?text=N/A`
   
+  // Validate image URL
+  const isValidImageUrl = (url) => {
+    if (!url || typeof url !== 'string') return false
+    
+    try {
+      new URL(url)
+      return true
+    } catch {
+      return /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?.*)?$/i.test(url)
+    }
+  }
+  
+  // Reset state when src changes
+  React.useEffect(() => {
+    if (src !== currentSrc) {
+      setCurrentSrc(src)
+      setImageError(false)
+      setImageLoading(true)
+      setRetryCount(0)
+    }
+  }, [src, currentSrc])
+  
   const handleImageError = () => {
-    setImageError(true)
-    setImageLoading(false)
+    if (retryCount < maxRetries && isValidImageUrl(currentSrc)) {
+      setRetryCount(prev => prev + 1)
+      
+      // Add timestamp to bypass cache
+      const retryUrl = currentSrc + (currentSrc.includes('?') ? '&' : '?') + `retry=${retryCount + 1}&t=${Date.now()}`
+      
+      setTimeout(() => {
+        setCurrentSrc(retryUrl)
+      }, 1000)
+    } else {
+      setImageError(true)
+      setImageLoading(false)
+    }
   }
   
   const handleImageLoad = () => {
     setImageLoading(false)
+    setImageError(false)
   }
+  
+  // Use fallback immediately if URL is invalid
+  const finalSrc = imageError || !isValidImageUrl(currentSrc) ? fallbackImage : currentSrc
   
   return (
     <div className="relative w-full h-full">
-      {imageLoading && (
+      {imageLoading && !imageError && (
         <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
           <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
       <img
-        src={imageError || !src ? fallbackImage : src}
+        src={finalSrc}
         alt={alt}
         className={className}
         onError={handleImageError}
         onLoad={handleImageLoad}
       />
+      {imageError && (
+        <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+          <ApperIcon name="ImageOff" size={16} className="text-gray-400" />
+        </div>
+      )}
     </div>
   )
 }
