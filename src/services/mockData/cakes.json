@@ -1,0 +1,146 @@
+[
+  {
+    "Id": 1,
+    "name": "Classic Vanilla Birthday Cake",
+    "category": "Birthday",
+    "basePrice": 45,
+    "images": [
+      "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "A timeless classic featuring layers of moist vanilla sponge cake with rich buttercream frosting. Perfect for any birthday celebration.",
+    "flavors": ["Vanilla", "Chocolate", "Strawberry"],
+    "sizes": [
+      { "name": "6 inch", "serves": "6-8 people", "price": 45 },
+      { "name": "8 inch", "serves": "12-15 people", "price": 65 },
+      { "name": "10 inch", "serves": "18-20 people", "price": 85 }
+    ],
+    "customizable": true
+  },
+  {
+    "Id": 2,
+    "name": "Chocolate Fudge Delight",
+    "category": "Birthday",
+    "basePrice": 50,
+    "images": [
+      "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Rich, decadent chocolate cake with layers of fudge filling and smooth chocolate ganache. A chocolate lover's dream come true.",
+    "flavors": ["Dark Chocolate", "Milk Chocolate", "Double Chocolate"],
+    "sizes": [
+      { "name": "6 inch", "serves": "6-8 people", "price": 50 },
+      { "name": "8 inch", "serves": "12-15 people", "price": 70 },
+      { "name": "10 inch", "serves": "18-20 people", "price": 90 }
+    ],
+    "customizable": true
+  },
+  {
+    "Id": 3,
+    "name": "Elegant Three-Tier Wedding Cake",
+    "category": "Wedding",
+    "basePrice": 250,
+    "images": [
+      "https://images.unsplash.com/photo-1621303837174-89787a4d83ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1535141192574-5d4897c12636?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "A stunning three-tier wedding cake with elegant buttercream roses and delicate piping. Perfect centerpiece for your special day.",
+    "flavors": ["Vanilla", "Lemon", "Red Velvet", "Carrot"],
+    "sizes": [
+      { "name": "6-8-10 inch", "serves": "50-60 people", "price": 250 },
+      { "name": "8-10-12 inch", "serves": "80-100 people", "price": 350 },
+      { "name": "10-12-14 inch", "serves": "120-150 people", "price": 450 }
+    ],
+    "customizable": true
+  },
+  {
+    "Id": 4,
+    "name": "Red Velvet Romance",
+    "category": "Wedding",
+    "basePrice": 180,
+    "images": [
+      "https://images.unsplash.com/photo-1557925923-cd4648e211a0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1562440499-64c9a74f0806?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Beautiful red velvet cake with cream cheese frosting, decorated with fresh roses and pearl accents. Perfect for romantic celebrations.",
+    "flavors": ["Red Velvet", "Strawberry", "Raspberry"],
+    "sizes": [
+      { "name": "6-8 inch", "serves": "25-30 people", "price": 180 },
+      { "name": "8-10 inch", "serves": "40-50 people", "price": 220 },
+      { "name": "10-12 inch", "serves": "60-75 people", "price": 280 }
+    ],
+    "customizable": true
+  },
+  {
+    "Id": 5,
+    "name": "Unicorn Fantasy Cake",
+    "category": "Specialty",
+    "basePrice": 75,
+    "images": [
+      "https://images.unsplash.com/photo-1555308610-94750c81e1d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Magical unicorn-themed cake with rainbow layers, buttercream mane, and edible glitter. Perfect for making dreams come true.",
+    "flavors": ["Rainbow", "Funfetti", "Cotton Candy"],
+    "sizes": [
+      { "name": "6 inch", "serves": "6-8 people", "price": 75 },
+      { "name": "8 inch", "serves": "12-15 people", "price": 95 },
+      { "name": "10 inch", "serves": "18-20 people", "price": 115 }
+    ],
+    "customizable": true
+  },
+  {
+    "Id": 6,
+    "name": "Superhero Adventure Cake",
+    "category": "Specialty",
+    "basePrice": 80,
+    "images": [
+      "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1607478900766-efe13248b125?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Action-packed superhero cake with bold colors and edible superhero figures. Perfect for little heroes' special days.",
+    "flavors": ["Chocolate", "Vanilla", "Strawberry"],
+    "sizes": [
+      { "name": "6 inch", "serves": "6-8 people", "price": 80 },
+      { "name": "8 inch", "serves": "12-15 people", "price": 100 },
+      { "name": "10 inch", "serves": "18-20 people", "price": 120 }
+    ],
+    "customizable": true
+  },
+  {
+    "Id": 7,
+    "name": "Lemon Blueberry Bliss",
+    "category": "Birthday",
+    "basePrice": 55,
+    "images": [
+      "https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Fresh and zesty lemon cake with blueberry filling and lemon buttercream. Light, refreshing, and perfect for spring celebrations.",
+    "flavors": ["Lemon", "Lemon Blueberry", "Citrus"],
+    "sizes": [
+      { "name": "6 inch", "serves": "6-8 people", "price": 55 },
+      { "name": "8 inch", "serves": "12-15 people", "price": 75 },
+      { "name": "10 inch", "serves": "18-20 people", "price": 95 }
+    ],
+    "customizable": true
+  },
+  {
+    "Id": 8,
+    "name": "Rustic Naked Wedding Cake",
+    "category": "Wedding",
+    "basePrice": 200,
+    "images": [
+      "https://images.unsplash.com/photo-1535254973040-607b474cb50d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1616690710400-a16d146927c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+    ],
+    "description": "Beautiful naked cake style with minimal frosting, decorated with fresh flowers and berries. Perfect for outdoor and rustic weddings.",
+    "flavors": ["Vanilla", "Lemon", "Funfetti", "Almond"],
+    "sizes": [
+      { "name": "6-8 inch", "serves": "25-30 people", "price": 200 },
+      { "name": "8-10 inch", "serves": "40-50 people", "price": 240 },
+      { "name": "10-12 inch", "serves": "60-75 people", "price": 300 }
+    ],
+    "customizable": true
+  }
+]

@@ -1,0 +1,29 @@
+[
+  {
+    "Id": 1,
+    "items": [
+      {
+        "cakeId": 1,
+        "quantity": 1,
+        "size": "8 inch",
+        "flavor": "Vanilla",
+        "message": "Happy Birthday!",
+        "deliveryDate": "2024-01-15",
+        "price": 65
+      }
+    ],
+    "customerInfo": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
+      "phone": "(555) 123-4567",
+      "address": "123 Main St",
+      "city": "Sweet City",
+      "state": "CA",
+      "zipCode": "12345"
+    },
+    "deliveryType": "delivery",
+    "total": 78.20,
+    "status": "confirmed"
+  }
+]

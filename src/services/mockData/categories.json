@@ -1,0 +1,29 @@
+[
+  {
+    "slug": "birthday",
+    "name": "Birthday Cakes",
+    "description": "Celebrate another year of life with our delicious birthday cakes",
+    "image": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    "icon": "Cake",
+    "count": 15,
+    "startingPrice": 45
+  },
+  {
+    "slug": "wedding",
+    "name": "Wedding Cakes",
+    "description": "Elegant and beautiful cakes for your special day",
+    "image": "https://images.unsplash.com/photo-1621303837174-89787a4d83ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    "icon": "Heart",
+    "count": 12,
+    "startingPrice": 180
+  },
+  {
+    "slug": "specialty",
+    "name": "Specialty Cakes",
+    "description": "Unique themed cakes for special occasions",
+    "image": "https://images.unsplash.com/photo-1555308610-94750c81e1d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    "icon": "Star",
+    "count": 20,
+    "startingPrice": 75
+  }
+]
