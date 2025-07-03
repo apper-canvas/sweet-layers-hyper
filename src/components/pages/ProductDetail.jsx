@@ -104,21 +104,26 @@ const handleOrderNow = () => {
       return
     }
     
-    // Add item to cart first
-    const cartItem = {
+    // Prepare order item for direct checkout
+    const orderItem = {
       cakeId: cake.Id,
       quantity: customization.quantity,
       size: customization.size,
       flavor: customization.flavor,
       message: customization.message,
       deliveryDate: customization.deliveryDate,
-      price: selectedPrice
+      price: selectedPrice,
+      cakeName: cake.name,
+      cakeCategory: cake.category
     }
     
-    addToCart(cartItem)
-    
-    // Navigate directly to checkout page
-    navigate('/checkout')
+    // Navigate directly to checkout page with product data
+    navigate('/checkout', { 
+      state: { 
+        directOrder: true, 
+        orderItem: orderItem 
+      } 
+    })
   }
   
   useEffect(() => {
