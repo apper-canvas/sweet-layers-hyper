@@ -59,6 +59,55 @@ export const deleteCake = async (Id) => {
   if (index === -1) {
     throw new Error('Cake not found')
   }
-  const deletedCake = cakesData.splice(index, 1)[0]
+const deletedCake = cakesData.splice(index, 1)[0]
   return { ...deletedCake }
+}
+
+// Image validation and preloading utilities
+export const validateImageUrl = (url) => {
+  if (!url || typeof url !== 'string') return false
+  
+  const imageExtensions = /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?.*)?$/i
+  
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return imageExtensions.test(url)
+  }
+}
+
+export const preloadImage = (url) => {
+  return new Promise((resolve, reject) => {
+    if (!validateImageUrl(url)) {
+      reject(new Error(`Invalid image URL: ${url}`))
+      return
+    }
+    
+    const img = new Image()
+    img.onload = () => resolve(url)
+    img.onerror = () => reject(new Error(`Failed to load image: ${url}`))
+    img.src = url
+  })
+}
+
+export const validateCakeImages = async (cake) => {
+  const validatedCake = { ...cake }
+  
+  if (cake.images && Array.isArray(cake.images)) {
+    const imageValidationPromises = cake.images.map(async (imageUrl) => {
+      try {
+        await preloadImage(imageUrl)
+        return imageUrl
+      } catch (error) {
+        console.warn(`Invalid image URL detected: ${imageUrl}`, error)
+        return null
+      }
+    })
+    
+    const validatedImages = await Promise.all(imageValidationPromises)
+    validatedCake.images = validatedImages.filter(url => url !== null)
+  }
+  
+  return validatedCake
 }

@@ -103,39 +103,146 @@ const ProductCard = ({ cake }) => {
   )
 }
 
-// Image component with error handling and fallback
+// Enhanced image component with retry mechanism and validation
 const ProductImage = ({ src, alt, className }) => {
   const [imageError, setImageError] = useState(false)
   const [imageLoading, setImageLoading] = useState(true)
+  const [retryCount, setRetryCount] = useState(0)
+  const [isRetrying, setIsRetrying] = useState(false)
   
+  const maxRetries = 2
   const fallbackImage = `https://via.placeholder.com/400x300/D4667A/FFFFFF?text=${encodeURIComponent(alt)}`
   
-  const handleImageError = () => {
-    setImageError(true)
-    setImageLoading(false)
+  // Validate image URL
+  const isValidImageUrl = (url) => {
+    if (!url || typeof url !== 'string') return false
+    
+    // Check for common image extensions
+    const imageExtensions = /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?.*)?$/i
+    
+    // Check for valid URL format
+    try {
+      new URL(url)
+      return true
+    } catch {
+      // If not a valid URL, check if it's a relative path with image extension
+      return imageExtensions.test(url)
+    }
+  }
+  
+  // Preload image to check if it's loadable
+  const preloadImage = (url) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => resolve(url)
+      img.onerror = () => reject(new Error(`Failed to load image: ${url}`))
+      img.src = url
+    })
+  }
+  
+  const handleImageError = async () => {
+    console.warn(`Image load failed for: ${src}`, {
+      alt,
+      retryCount,
+      isValidUrl: isValidImageUrl(src)
+    })
+    
+    if (retryCount < maxRetries && isValidImageUrl(src)) {
+      setIsRetrying(true)
+      setRetryCount(prev => prev + 1)
+      
+      // Exponential backoff: wait 1s, then 2s, then 4s
+      const delay = Math.pow(2, retryCount) * 1000
+      
+      setTimeout(async () => {
+        try {
+          await preloadImage(src)
+          // If preload succeeds, force re-render by updating the src
+          setImageError(false)
+          setIsRetrying(false)
+          // Trigger re-render by changing src slightly
+          const img = document.querySelector(`img[alt="${alt}"]`)
+          if (img) {
+            img.src = src + (src.includes('?') ? '&' : '?') + `retry=${retryCount}`
+          }
+        } catch (error) {
+          console.error(`Retry ${retryCount} failed for image:`, error)
+          setIsRetrying(false)
+          if (retryCount >= maxRetries) {
+            setImageError(true)
+            setImageLoading(false)
+          }
+        }
+      }, delay)
+    } else {
+      setImageError(true)
+      setImageLoading(false)
+    }
   }
   
   const handleImageLoad = () => {
     setImageLoading(false)
+    setImageError(false)
+    setIsRetrying(false)
   }
+  
+  const handleRetryClick = () => {
+    if (retryCount < maxRetries) {
+      setRetryCount(0)
+      setImageError(false)
+      setImageLoading(true)
+      setIsRetrying(false)
+      
+      // Force reload the image
+      const img = document.querySelector(`img[alt="${alt}"]`)
+      if (img) {
+        img.src = src + (src.includes('?') ? '&' : '?') + `t=${Date.now()}`
+      }
+    }
+  }
+  
+  // Use fallback immediately if URL is invalid
+  const finalSrc = imageError || !isValidImageUrl(src) ? fallbackImage : src
   
   return (
     <div className="relative">
       {imageLoading && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center image-loading-state">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+            {isRetrying && (
+              <span className="text-xs text-gray-600">Retrying... ({retryCount}/{maxRetries})</span>
+            )}
+          </div>
         </div>
       )}
+      
       <img
-        src={imageError || !src ? fallbackImage : src}
+        src={finalSrc}
         alt={alt}
         className={className}
         onError={handleImageError}
         onLoad={handleImageLoad}
       />
+      
       {imageError && (
-        <div className="absolute bottom-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
-          Image unavailable
+        <div className="absolute inset-0 bg-gray-100 flex flex-col items-center justify-center p-4">
+          <div className="image-error-container text-center">
+            <ApperIcon name="ImageOff" size={32} className="text-gray-400 mb-2 mx-auto" />
+            <p className="text-sm text-gray-600 mb-2">Image unavailable</p>
+            {retryCount < maxRetries && (
+              <button
+                onClick={handleRetryClick}
+                className="image-retry-btn text-xs px-3 py-1 rounded"
+                disabled={isRetrying}
+              >
+                {isRetrying ? 'Retrying...' : 'Retry'}
+              </button>
+            )}
+            <div className="text-xs text-gray-400 mt-1">
+              Attempts: {retryCount}/{maxRetries}
+            </div>
+          </div>
         </div>
       )}
     </div>
