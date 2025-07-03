@@ -2,6 +2,18 @@ import cakesData from '@/services/mockData/cakes.json'
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
+// Fallback placeholder images for when external images fail
+const FALLBACK_IMAGES = [
+  'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDgwMCA2MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0zNTAgMjUwSDE1MFYzNTBIMzUwVjI1MFoiIGZpbGw9IiNEMUQ1REIiLz4KPHBhdGggZD0iTTMwMCAzMDBIMjAwVjMwMFoiIGZpbGw9IiNEMUQ1REIiLz4KPHRleHQgeD0iNDAwIiB5PSIzMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzlDQTNBRiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q2FrZSBJbWFnZTwvdGV4dD4KPC9zdmc+',
+  'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDgwMCA2MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjRkVGQUY3Ii8+CjxjaXJjbGUgY3g9IjQwMCIgY3k9IjMwMCIgcj0iMTAwIiBmaWxsPSIjRDQ2NjdBIiBvcGFjaXR5PSIwLjIiLz4KPHRleHQgeD0iNDAwIiB5PSIzMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzZCNEM1QSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U3dlZXQgTGF5ZXJzPC90ZXh0Pgo8L3N2Zz4='
+]
+
+// Get a fallback image based on cake ID for consistency
+const getFallbackImage = (cakeId) => {
+  const index = cakeId ? Math.abs(cakeId.toString().charCodeAt(0)) % FALLBACK_IMAGES.length : 0
+  return FALLBACK_IMAGES[index]
+}
+
 export const getCakes = async () => {
   await delay(300)
   return [...cakesData]
@@ -77,17 +89,50 @@ export const validateImageUrl = (url) => {
   }
 }
 
-export const preloadImage = (url) => {
+export const preloadImage = (url, retries = 3, cakeId = null) => {
   return new Promise((resolve, reject) => {
     if (!validateImageUrl(url)) {
-      reject(new Error(`Invalid image URL: ${url}`))
+      console.warn(`Invalid image URL: ${url}, using fallback`)
+      resolve(getFallbackImage(cakeId))
       return
     }
     
-    const img = new Image()
-    img.onload = () => resolve(url)
-    img.onerror = () => reject(new Error(`Failed to load image: ${url}`))
-    img.src = url
+    const attemptLoad = (attemptNumber) => {
+      const img = new Image()
+      
+      const timeout = setTimeout(() => {
+        img.src = '' // Cancel the request
+        if (attemptNumber < retries) {
+          const backoffDelay = Math.pow(2, attemptNumber) * 1000 // Exponential backoff
+          console.log(`Image load timeout (attempt ${attemptNumber}/${retries}), retrying in ${backoffDelay}ms: ${url}`)
+          setTimeout(() => attemptLoad(attemptNumber + 1), backoffDelay)
+        } else {
+          console.warn(`Image failed to load after ${retries} attempts: ${url}, using fallback`)
+          resolve(getFallbackImage(cakeId))
+        }
+      }, 5000) // 5 second timeout per attempt
+      
+      img.onload = () => {
+        clearTimeout(timeout)
+        resolve(url)
+      }
+      
+      img.onerror = () => {
+        clearTimeout(timeout)
+        if (attemptNumber < retries) {
+          const backoffDelay = Math.pow(2, attemptNumber) * 1000
+          console.log(`Image load error (attempt ${attemptNumber}/${retries}), retrying in ${backoffDelay}ms: ${url}`)
+          setTimeout(() => attemptLoad(attemptNumber + 1), backoffDelay)
+        } else {
+          console.warn(`Image failed to load after ${retries} attempts: ${url}, using fallback`)
+          resolve(getFallbackImage(cakeId))
+        }
+      }
+      
+      img.src = url
+    }
+    
+    attemptLoad(1)
   })
 }
 
@@ -95,19 +140,44 @@ export const validateCakeImages = async (cake) => {
   const validatedCake = { ...cake }
   
   if (cake.images && Array.isArray(cake.images)) {
-    const imageValidationPromises = cake.images.map(async (imageUrl) => {
+    const imageValidationPromises = cake.images.map(async (imageUrl, index) => {
       try {
-        await preloadImage(imageUrl)
-        return imageUrl
+        const validatedUrl = await preloadImage(imageUrl, 3, cake.id)
+        return validatedUrl
       } catch (error) {
-        console.warn(`Invalid image URL detected: ${imageUrl}`, error)
-        return null
+        console.warn(`Image validation failed for cake ${cake.id} image ${index}: ${imageUrl}`, error)
+        return getFallbackImage(cake.id) // Always return a fallback
       }
     })
     
     const validatedImages = await Promise.all(imageValidationPromises)
-    validatedCake.images = validatedImages.filter(url => url !== null)
+    validatedCake.images = validatedImages // No filtering needed as we always return valid images
+    
+    // Ensure cake has at least one image
+    if (!validatedCake.images || validatedCake.images.length === 0) {
+      validatedCake.images = [getFallbackImage(cake.id)]
+    }
+  } else {
+    // If no images provided, add a fallback
+    validatedCake.images = [getFallbackImage(cake.id)]
   }
   
   return validatedCake
+}
+
+// Enhanced image loading with loading states
+export const loadImageWithState = (url, onLoadingStateChange) => {
+  return new Promise((resolve, reject) => {
+    onLoadingStateChange?.('loading')
+    
+    preloadImage(url)
+      .then((validatedUrl) => {
+        onLoadingStateChange?.('success')
+        resolve(validatedUrl)
+      })
+      .catch((error) => {
+        onLoadingStateChange?.('error')
+        reject(error)
+      })
+  })
 }
