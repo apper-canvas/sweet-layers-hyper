@@ -4,7 +4,7 @@ const CartContext = createContext()
 
 const cartReducer = (state, action) => {
   switch (action.type) {
-    case 'ADD_ITEM':
+    case 'ADD_ITEM': {
       const existingItemIndex = state.findIndex(
         item => item.cakeId === action.payload.cakeId && 
                 item.size === action.payload.size && 
@@ -18,7 +18,7 @@ const cartReducer = (state, action) => {
       }
       
       return [...state, action.payload]
-    
+    }
     case 'UPDATE_ITEM':
       return state.map(item =>
         item.cakeId === action.payload.cakeId && 
