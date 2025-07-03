@@ -312,17 +312,28 @@ const handleAddToCart = () => {
                 </div>
               </div>
             </div>
-            
-            {/* Add to Cart Button */}
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={handleAddToCart}
-              className="w-full"
-            >
-              <ApperIcon name="ShoppingCart" size={20} />
-              Add to Cart - ${totalPrice.toFixed(2)}
-            </Button>
+{/* Action Buttons */}
+            <div className="space-y-3">
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={handleAddToCart}
+                className="w-full"
+              >
+                <ApperIcon name="ShoppingCart" size={20} />
+                Add to Cart - ${totalPrice.toFixed(2)}
+              </Button>
+              
+              <Button
+                variant="accent"
+                size="lg"
+                onClick={handleOrderNow}
+                className="w-full"
+              >
+                <ApperIcon name="Zap" size={20} />
+                Order Now - ${totalPrice.toFixed(2)}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
