@@ -7,6 +7,12 @@ const Badge = ({ children, variant = 'default', className = '' }) => {
     success: 'bg-success/10 text-success',
     warning: 'bg-warning/10 text-warning',
     error: 'bg-error/10 text-error',
+    // Enhanced status variants
+    pending: 'bg-warning/20 text-warning border border-warning/30',
+    confirmed: 'bg-success/20 text-success border border-success/30',
+    shipped: 'bg-info/20 text-info border border-info/30',
+    delivered: 'bg-success/30 text-success border border-success/40',
+    cancelled: 'bg-error/20 text-error border border-error/30',
   }
   
   return (

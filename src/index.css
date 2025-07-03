@@ -77,8 +77,12 @@
     @apply bg-accent text-white px-3 py-1 rounded-full text-sm font-semibold transform -rotate-2 inline-block;
   }
   
-  .badge {
-    @apply px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide;
+.badge {
+    @apply px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide transition-all duration-200;
+  }
+  
+  .badge-status {
+    @apply px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 shadow-sm;
   }
   
   .gradient-text {

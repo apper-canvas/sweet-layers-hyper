@@ -43,5 +43,37 @@ export const deleteOrder = async (Id) => {
     throw new Error('Order not found')
   }
   const deletedOrder = ordersData.splice(index, 1)[0]
-  return { ...deletedOrder }
+return { ...deletedOrder }
+}
+
+export const getEstimatedDeliveryDate = (order) => {
+  if (order.status === 'delivered') {
+    return null // Already delivered
+  }
+  
+  if (order.status === 'cancelled') {
+    return null // Cancelled order
+  }
+
+  const orderDate = new Date(order.orderDate || new Date())
+  let daysToAdd = 0
+
+  switch (order.status) {
+    case 'pending':
+      daysToAdd = 5 // 5 business days for pending orders
+      break
+    case 'confirmed':
+      daysToAdd = 3 // 3 business days for confirmed orders
+      break
+    case 'shipped':
+      daysToAdd = 1 // 1 business day for shipped orders
+      break
+    default:
+      daysToAdd = 5
+  }
+
+  const estimatedDate = new Date(orderDate)
+  estimatedDate.setDate(orderDate.getDate() + daysToAdd)
+  
+  return estimatedDate
 }

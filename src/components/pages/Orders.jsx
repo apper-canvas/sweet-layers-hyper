@@ -32,27 +32,14 @@ const Orders = () => {
     }
   }
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'confirmed':
-        return 'bg-success text-white'
-      case 'pending':
-        return 'bg-warning text-white'
-      case 'delivered':
-        return 'bg-info text-white'
-      case 'cancelled':
-        return 'bg-error text-white'
-      default:
-        return 'bg-gray-500 text-white'
-    }
-  }
-
-  const getStatusIcon = (status) => {
+const getStatusIcon = (status) => {
     switch (status) {
       case 'confirmed':
         return 'CheckCircle'
       case 'pending':
         return 'Clock'
+      case 'shipped':
+        return 'Truck'
       case 'delivered':
         return 'Package'
       case 'cancelled':
@@ -60,6 +47,38 @@ const Orders = () => {
       default:
         return 'Circle'
     }
+  }
+
+  const getEstimatedDeliveryDate = (order) => {
+    if (order.status === 'delivered') {
+      return 'Delivered'
+    }
+    
+    if (order.status === 'cancelled') {
+      return 'Cancelled'
+    }
+
+    const orderDate = new Date(order.orderDate || new Date())
+    let daysToAdd = 0
+
+    switch (order.status) {
+      case 'pending':
+        daysToAdd = 5 // 5 days for pending orders
+        break
+      case 'confirmed':
+        daysToAdd = 3 // 3 days for confirmed orders
+        break
+      case 'shipped':
+        daysToAdd = 1 // 1 day for shipped orders
+        break
+      default:
+        daysToAdd = 5
+    }
+
+    const estimatedDate = new Date(orderDate)
+    estimatedDate.setDate(orderDate.getDate() + daysToAdd)
+    
+    return formatDate(estimatedDate)
   }
 
   const formatDate = (dateString) => {
@@ -134,9 +153,8 @@ const Orders = () => {
                         </p>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center gap-4">
-                      <Badge className={`${getStatusColor(order.status)} flex items-center gap-2`}>
+<div className="flex items-center gap-4">
+                      <Badge variant={order.status} className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium">
                         <ApperIcon name={getStatusIcon(order.status)} size={14} />
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                       </Badge>
@@ -177,12 +195,17 @@ const Orders = () => {
                                 <p className="text-sm text-gray-600 mt-1">
                                   Message: "{item.message}"
                                 </p>
-                              )}
-                              {item.deliveryDate && (
-                                <p className="text-sm text-gray-600 mt-1">
-                                  Delivery: {formatDate(item.deliveryDate)}
+)}
+                              <div className="flex items-center gap-4 mt-2">
+                                {item.deliveryDate && (
+                                  <p className="text-sm text-gray-600">
+                                    Requested: {formatDate(item.deliveryDate)}
+                                  </p>
+                                )}
+                                <p className="text-sm font-medium text-primary">
+                                  Est. Delivery: {getEstimatedDeliveryDate(order)}
                                 </p>
-                              )}
+                              </div>
                             </div>
                           </div>
                         </div>
