@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { toast } from 'react-toastify'
-import ApperIcon from '@/components/ApperIcon'
-import Button from '@/components/atoms/Button'
-import Badge from '@/components/atoms/Badge'
-import { useCart } from '@/hooks/useCart'
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+import React, { useState } from "react";
+import { useCart } from "@/hooks/useCart";
+import ApperIcon from "@/components/ApperIcon";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
 
 const ProductCard = ({ cake }) => {
   const { addToCart } = useCart()
@@ -36,9 +37,9 @@ const ProductCard = ({ cake }) => {
     >
       <Link to={`/cake/${cake.Id}`}>
         <div className="relative overflow-hidden">
-          <img
-            src={cake.images[0]}
-            alt={cake.name}
+<ProductImage 
+            src={cake?.images?.[0]} 
+            alt={cake?.name || 'Cake image'} 
             className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
           />
           <div className="absolute top-3 left-3">
@@ -79,6 +80,7 @@ const ProductCard = ({ cake }) => {
           </div>
           
           <div className="flex items-center gap-2">
+<div className="flex items-center gap-2">
             <Button
               variant="primary"
               size="sm"
@@ -99,6 +101,45 @@ const ProductCard = ({ cake }) => {
         </div>
       </Link>
     </motion.div>
+  )
+}
+
+// Image component with error handling and fallback
+const ProductImage = ({ src, alt, className }) => {
+  const [imageError, setImageError] = useState(false)
+  const [imageLoading, setImageLoading] = useState(true)
+  
+  const fallbackImage = `https://via.placeholder.com/400x300/D4667A/FFFFFF?text=${encodeURIComponent(alt)}`
+  
+  const handleImageError = () => {
+    setImageError(true)
+    setImageLoading(false)
+  }
+  
+  const handleImageLoad = () => {
+    setImageLoading(false)
+  }
+  
+  return (
+    <div className="relative">
+      {imageLoading && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      <img
+        src={imageError || !src ? fallbackImage : src}
+        alt={alt}
+        className={className}
+        onError={handleImageError}
+        onLoad={handleImageLoad}
+      />
+      {imageError && (
+        <div className="absolute bottom-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+          Image unavailable
+        </div>
+      )}
+    </div>
   )
 }
 

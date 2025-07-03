@@ -1,16 +1,18 @@
-import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { toast } from 'react-toastify'
-import ApperIcon from '@/components/ApperIcon'
-import Button from '@/components/atoms/Button'
-import Select from '@/components/atoms/Select'
-import Input from '@/components/atoms/Input'
-import Badge from '@/components/atoms/Badge'
-import Loading from '@/components/ui/Loading'
-import Error from '@/components/ui/Error'
-import { getCakeById } from '@/services/api/cakeService'
-import { useCart } from '@/hooks/useCart'
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+import { useCart } from "@/hooks/useCart";
+import ApperIcon from "@/components/ApperIcon";
+import Select from "@/components/atoms/Select";
+import Badge from "@/components/atoms/Badge";
+import Input from "@/components/atoms/Input";
+import Button from "@/components/atoms/Button";
+import Error from "@/components/ui/Error";
+import Loading from "@/components/ui/Loading";
+import Cart from "@/components/pages/Cart";
+import Home from "@/components/pages/Home";
+import { getCakeById } from "@/services/api/cakeService";
 
 const ProductDetail = () => {
   const { cakeId } = useParams()
@@ -137,11 +139,11 @@ const ProductDetail = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="aspect-square overflow-hidden rounded-2xl shadow-lg"
+className="aspect-square overflow-hidden rounded-2xl shadow-lg"
             >
-              <img
-                src={cake.images[selectedImage]}
-                alt={cake.name}
+              <ProductDetailImage 
+                src={cake?.images?.[selectedImage]} 
+                alt={cake?.name || 'Cake image'} 
                 className="w-full h-full object-cover"
               />
             </motion.div>
@@ -155,10 +157,10 @@ const ProductDetail = () => {
                     className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
                       selectedImage === index ? 'border-primary' : 'border-gray-200'
                     }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`${cake.name} view ${index + 1}`}
+>
+                    <ProductThumbnail 
+                      src={image} 
+                      alt={`${cake?.name || 'Cake'} view ${index + 1}`} 
                       className="w-full h-full object-cover"
                     />
                   </button>
@@ -298,6 +300,79 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+// Image component with error handling for main product image
+const ProductDetailImage = ({ src, alt, className }) => {
+  const [imageError, setImageError] = useState(false)
+  const [imageLoading, setImageLoading] = useState(true)
+  
+  const fallbackImage = `https://via.placeholder.com/600x400/D4667A/FFFFFF?text=${encodeURIComponent(alt)}`
+  
+  const handleImageError = () => {
+    setImageError(true)
+    setImageLoading(false)
+  }
+  
+  const handleImageLoad = () => {
+    setImageLoading(false)
+  }
+  
+  return (
+    <div className="relative w-full h-full">
+      {imageLoading && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      <img
+        src={imageError || !src ? fallbackImage : src}
+        alt={alt}
+        className={className}
+        onError={handleImageError}
+        onLoad={handleImageLoad}
+      />
+      {imageError && (
+        <div className="absolute bottom-4 right-4 bg-red-500 text-white text-sm px-3 py-2 rounded-lg">
+          Image unavailable
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Thumbnail component with error handling
+const ProductThumbnail = ({ src, alt, className }) => {
+  const [imageError, setImageError] = useState(false)
+  const [imageLoading, setImageLoading] = useState(true)
+  
+  const fallbackImage = `https://via.placeholder.com/100x100/D4667A/FFFFFF?text=N/A`
+  
+  const handleImageError = () => {
+    setImageError(true)
+    setImageLoading(false)
+  }
+  
+  const handleImageLoad = () => {
+    setImageLoading(false)
+  }
+  
+  return (
+    <div className="relative w-full h-full">
+      {imageLoading && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      <img
+        src={imageError || !src ? fallbackImage : src}
+        alt={alt}
+        className={className}
+        onError={handleImageError}
+        onLoad={handleImageLoad}
+      />
     </div>
   )
 }
