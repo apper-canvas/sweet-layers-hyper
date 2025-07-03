@@ -162,10 +162,10 @@ const handleAddToCart = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Image Gallery */}
           <div className="space-y-4">
-            <motion.div
+<motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-className="aspect-square overflow-hidden rounded-2xl shadow-lg"
+              className="aspect-square overflow-hidden rounded-2xl shadow-lg"
             >
               <ProductDetailImage 
                 src={cake?.images?.[selectedImage]} 
@@ -444,34 +444,6 @@ const ProductDetailImage = ({ src, alt, className }) => {
           </div>
         </div>
       )}
-    </div>
-  )
-}
-{/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={handleAddToCart}
-                className="flex-1"
-              >
-                <ApperIcon name="ShoppingCart" size={20} />
-                Add to Cart - ${totalPrice.toFixed(2)}
-              </Button>
-              
-              <Button
-                variant="accent"
-                size="lg"
-                onClick={handleOrderNow}
-                className="flex-1"
-              >
-                <ApperIcon name="ShoppingBag" size={20} />
-                Order Now - ${totalPrice.toFixed(2)}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
