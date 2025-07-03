@@ -104,12 +104,21 @@ const handleOrderNow = () => {
       return
     }
     
-    toast.success(`Proceeding to checkout with ${cake.name}...`)
+    // Add item to cart first
+    const cartItem = {
+      cakeId: cake.Id,
+      quantity: customization.quantity,
+      size: customization.size,
+      flavor: customization.flavor,
+      message: customization.message,
+      deliveryDate: customization.deliveryDate,
+      price: selectedPrice
+    }
+    
+    addToCart(cartItem)
     
     // Navigate directly to checkout page
-    setTimeout(() => {
-      navigate('/checkout')
-    }, 1000)
+    navigate('/checkout')
   }
   
   useEffect(() => {
